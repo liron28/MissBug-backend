@@ -17,6 +17,7 @@ const corsOptions = {
     credentials: true
 }
 // Express Config:
+app.use(express.static('public'))
 app.use(cors(corsOptions))
 app.use(cookieParser())
 
@@ -102,5 +103,5 @@ const updateVisitedBugs = (bugId , bugLimiter) =>{
     }
     return bugLimiter
 }
-
-app.listen(3030, () => console.log('Server ready at port 3030'))
+const port = process.env.PORT || 3030
+app.listen(port, () => console.log(`Server ready at ${port}`))
