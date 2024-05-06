@@ -1,0 +1,14 @@
+[
+    {
+        "_id" : "abc123",
+        "title" : "Cannot save a Car",
+        "severity" : 3,
+        "createdAt" : 1542107359454
+    },
+    {
+        "_id" : "def456",
+        "title" : "Cannot connect",
+        "severity" : 7,
+        "createdAt" : 1542107359484
+    }
+]
