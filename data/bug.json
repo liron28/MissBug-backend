@@ -2,9 +2,8 @@
     {
         "_id": "gFe9dj",
         "title": "hgkjhk",
-        "severity": 4,
-        "desc": "ik;''",
-        "cratedAt": 1714752905468
+        "severity": 8,
+        "desc": "ik;''"
     },
     {
         "_id": "CqqHxH",
@@ -14,10 +13,11 @@
         "cratedAt": 1714752943764
     },
     {
-        "_id": "pZV3qZ",
-        "title": "hello",
-        "severity": 7,
-        "desc": "working well",
-        "cratedAt": 1715004917973
+        "title": "bug of postman ",
+        "severity": 3,
+        "desc": "not create an new bug",
+        "createdAt": null,
+        "_id": "fK6dxB",
+        "cratedAt": 1715261885748
     }
 ]
