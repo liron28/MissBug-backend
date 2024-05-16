@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { utillService } from "./util.service.js"
 
+const PAGE_SIZE =2
 const bugs= utillService.readJsonFile('data/bug.json')
 
 export const bugService = {
@@ -10,9 +11,21 @@ export const bugService = {
     save
 }
 
-async function query() {
+async function query(filterBy ={}) {
+    let filterBugs = [...bugs]
     try {
-        return bugs
+        if(filterBy.txt){
+            const regex = new RegExp(filterBy.txt,'i')
+            filterBugs = filterBugs.filter(bug => regex.test(bug.title))
+        }
+        if(filterBy.minSeverity){
+            filterBugs = filterBugs.filter(bug => bug.severity >= filterBy.minSeverity)
+        }
+        if(filterBy.pageIdx !== undefined){
+            const startIdx = filterBy.pageIdx * PAGE_SIZE
+            filterBugs =filterBugs.slice(startIdx,startIdx + PAGE_SIZE)
+        }
+        return filterBugs
     } catch (error){
         throw(error)
     }
