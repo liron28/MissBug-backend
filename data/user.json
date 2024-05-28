@@ -1,3 +1,10 @@
 [
-    
+    {
+        "username": "liron s",
+        "password": "$2b$10$hZ5TSxH11iqfniYbgzbPH.QiTRUwkXA35Q3nF/GQ3exGrbBS.Xvwi",
+        "fullname": "liron",
+        "_id": "RPC6ek",
+        "score": 10000,
+        "createdAt": 1716910219551
+    }
 ]

@@ -1,0 +1,3 @@
+28.5.2024, 18:30:19 - DEBUG - auth.service - signup with username: liron s, fullname: liron
+28.5.2024, 18:30:19 - DEBUG - auth.route - new account created: {"username":"liron s","password":"$2b$10$hZ5TSxH11iqfniYbgzbPH.QiTRUwkXA35Q3nF/GQ3exGrbBS.Xvwi","fullname":"liron","_id":"RPC6ek","score":10000,"createdAt":1716910219551}
+28.5.2024, 18:30:19 - INFO - User signup: | {"_id":"RPC6ek","fullname":"liron","score":10000}
