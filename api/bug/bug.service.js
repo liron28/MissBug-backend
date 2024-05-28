@@ -18,6 +18,9 @@ async function query(filterBy ={}) {
             const regex = new RegExp(filterBy.txt,'i')
             filterBugs = filterBugs.filter(bug => regex.test(bug.title))
         }
+        if(filterBy.labels){
+            filterBugs = filterBugs.filter(bug => bug.labels.includes(filterBy.labels))
+        }
         if(filterBy.minSeverity){
             filterBugs = filterBugs.filter(bug => bug.severity >= filterBy.minSeverity)
         }
@@ -55,6 +58,7 @@ async function save(bugToSave){
         if(bugToSave._id){
             const index = bugs.findIndex(bug => bug._id === bugToSave._id)
             if (index < 0) throw `Cant find bug with id ${bugToSave._id}`
+            bugToSave.updateAt = Date.now()
             bugs[index] = bugToSave
         } else {
             bugToSave._id = utillService.makeId()

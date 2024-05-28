@@ -1,90 +1,82 @@
 import { bugService } from "./bug.service.js"
+import { authService } from './../auth/auth.service.js'
+import { loggerService } from "../../services/logger.service.js"
 
+export async function getBugs(req, res){
+    const { title, severity, label, pageIdx, sortBy } = req.query
+    const filterBy = { title, severity: +severity, label, pageIdx, sortBy }
 
-export async function getBugs(req, res) {
-    const {txt, minSeverity, padeIdx}= req.query
-    const filterBy= {txt, minSeverity: +minSeverity, padeIdx}
     try {
+        const loggedinUser = authService.validateToken(req.cookies.loginToken)
         const bugs = await bugService.query(filterBy)
         res.send(bugs)
-    } catch (error) {
-        res.status(400).send(`Could'nt get bugs`)
+    } catch (err) {
+        loggerService.error(`Cannot get bugs`, err)
+        res.status(400).send(`Cannot'nt get bugs`)
     }
 }
 
-export async function getBug (req, res) {
+export async function getBug(req, res) {
     try {
         const bugId = req.params.bugId
+        // console.log('bugId:', bugId)
+        let visitedBugs = req.cookies.visitedBugs || []
+        if (visitedBugs.length > 2) return res.status(401).send('Wait for a bit');
+        if (!visitedBugs.includes(bugId)) visitedBugs.push(bugId) 
+        res.cookie('visitedBugs', visitedBugs, { maxAge: 7 * 1000 })
 
-        let bugLimiter = req.cookies.bugLimiter
-        bugLimiter = updateVisitedBugs(bugId, bugLimiter)
-        console.log(bugLimiter);
-        res.cookie('bugLimiter', bugLimiter)
-        
         const bug = await bugService.getById(bugId)
+        // console.log('bug:', bug)
         res.send(bug)
-    } catch (error) {
-        if(error.message === 'bugLimit Reached'){
-            res.status(401).send(`Wait for a bit`)    
-        }else {
-            res.status(400).send(`Could'nt get bug`)
-        }
+    } catch (err) {
+        loggerService.error(`Cannot get bug`, err)
+        res.status(400).send(`Cannot get bug`)
     }
 }
 
-export async function updateBug (req, res) {
-    const { _id, title, severity, desc } =req.body 
-    let bugToSave ={_id, title, severity: +severity, desc }
+export async function removeBug(req, res) {
+    
+    const {bugId} = req.params
+    // const loggedinUser = authService.validateToken(req.cookies.loginToken)
+    // if (!loggedinUser) return res.status(401).send('Not authenticated')
+
     try {
-        bugToSave = await bugService.save(bugToSave)
-        res.send(bugToSave)
-    } catch (error) {
-        res.status(400).send(`Could'nt save bug`)
+        await bugService.remove(bugId, req.loggedinUser)
+        res.send('deleted')
+    } catch (err) {
+        loggerService.error(`Cannot remove bug`, err)
+        res.status(400).send(`Cannot remove bug`)
     }
 }
 
-export async function addBug(req, res) {
-    const { title, severity, desc } =req.body 
-    let bugToSave ={title, severity: +severity, desc }
+export async function updateBug(req, res){
+    const { _id, title, severity, description, labels } = req.body 
+    let bugToSave = { _id, title, severity: +severity, description, labels }
+
+    // const loggedinUser = authService.validateToken(req.cookies.loginToken)
+    // if (!loggedinUser) return res.status(401).send('Not authenticated')
+
     try {
-        bugToSave = await bugService.save(bugToSave)
-        res.send(bugToSave)
-    } catch (error) {
-        res.status(400).send(`Could'nt save bug`)
+        const savedBug = await bugService.save(bugToSave, req.loggedinUser)
+        res.send(savedBug)
+    } catch (err) {
+        loggerService.error(`Cannot save bug`, err)
+        res.status(400).send(`Cannot save bug`)
     }
 }
 
-export  async function removeBug(req, res) {
+export async function addBug(req, res){
+    const { title, severity, description, labels } = req.body 
+    let bugToSave = { title, severity: +severity, description, labels }
+    
+    // const loggedinUser = authService.validateToken(req.cookies.loginToken)
+    // if (!loggedinUser) return res.status(401).send('Not authenticated')
+
     try {
-        const bugId = req.params.bugId
-        await bugService.remove(bugId)
-        res.send('removed bug') 
-    } catch (error) {
-        res.status(400).send(`Could'nt remove the bug`)   
+        const savedBug = await bugService.save(bugToSave, req.loggedinUser)
+        res.send(savedBug)
+    } catch (err) {
+        loggerService.error(`Cannot save bug`, err)
+        res.status(400).send(`Cannot save bug`)
     }
-}
-
-const updateVisitedBugs = (bugId , bugLimiter) =>{
-    const timeout = '7 seconds'
-
-    if(!bugLimiter){
-        bugLimiter ={
-            visitedBugs:[],
-            lastVisit: Date.now()
-        }
-    }
-    if(bugLimiter.visitedBugs.length < 3){
-        bugLimiter.visitedBugs.push(bugId)
-        if (bugLimiter.visitedBugs.length === 3){
-            bugLimiter.lastVisit = Date.now()
-        }
-    }
-    else{
-        if(Date.now() - bugLimiter.lastVisit > ms(timeout)){
-            bugLimiter.visitedBugs=[]
-        } else{
-            throw new Error('bugLimit Reached')
-        }
-    }
-    return bugLimiter
 }
