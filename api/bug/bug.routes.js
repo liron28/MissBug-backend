@@ -1,12 +1,14 @@
 import express from 'express'
-import { removeBug, getBugs, getBug,updateBug,addBug } from './bug.controller.js'
+import { addBug, getBugs, getBug, removeBug, updateBug } from './bug.controller.js'
+import { log } from '../../middlewares/log.middleware.js'
+import { requireUser } from '../../middlewares/requireAuth.middleware.js'
 
 const router = express.Router()
 
-router.get('/', getBugs)
-router.get('/:bugId', getBug)
-router.delete('/:bugId', removeBug)
-router.put('/:bugId', updateBug)
-router.post('/', addBug)
+router.get('/', log, getBugs)
+router.get('/:bugId', log, getBug)
+router.delete('/:bugId', log, requireUser, removeBug)
+router.put('/:bugId', log, requireUser, updateBug)
+router.post('/', log, requireUser, addBug)
 
 export const bugRoutes = router
